@@ -22,7 +22,7 @@ Global tools used by some commands (install as needed):
 ```bash
 cd your-repo
 mhdd24 init              # creates .mhdd24rc (+ optional .env) with auto framework detection
-mhdd24 doctor            # Node/git/Mongo + detected framework
+mhdd24 doctor            # Node/npm versions + binary paths, git, Mongo, framework
 mhdd24 dashboard         # local web panel → http://127.0.0.1:3847/
 ```
 
@@ -101,6 +101,11 @@ With `vercel.cliDeployAfterPush: true`, pushes from `mhdd24 push`, `mhdd24 deplo
 - `mhdd24 push "message"` — add, commit, push; optional Vercel per rc
 - `mhdd24 deploy "message"` — push (+ optional Vercel), `build`, `deploy` scripts from rc
 - `mhdd24 release` — standard-version, push, tags, npm publish (OTP)
+- **`mhdd24 version`** — wraps [`npm version`](https://docs.npmjs.com/cli/v10/commands/npm-version) to bump `package.json` semver:
+  - `mhdd24 version` or `mhdd24 version patch` — patch bump (default)
+  - `mhdd24 version minor` / `major` — explicit level
+  - **`mhdd24 version auto`** — **auto-matched** bump from git history since the **latest tag** (or last 30 commits if no tag): `feat:` → **minor**, `type!:` / `BREAKING CHANGE` → **major**, otherwise **patch**
+  - Add **`--no-git-tag-version`** anywhere on the command line to only change `package.json` (no version commit/tag from npm)
 
 **Vercel & domains**
 
@@ -115,7 +120,7 @@ With `vercel.cliDeployAfterPush: true`, pushes from `mhdd24 push`, `mhdd24 deplo
 
 **Dev**
 
-- `mhdd24 doctor`
+- `mhdd24 doctor` — prints `node` / `npm` versions and their `PATH` locations (`command -v`)
 - `mhdd24 logs` — `tail -f logs/app.log`
 - `mhdd24 analyze` — source-map-explorer
 - `mhdd24 rollback` — soft reset last commit

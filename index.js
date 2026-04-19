@@ -59,6 +59,52 @@ function hasCmd(name) {
   }
 }
 
+function getCmdPath(name) {
+  try {
+    return execSync(`command -v ${name}`, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] })
+      .trim()
+      .split("\n")[0];
+  } catch {
+    return null;
+  }
+}
+
+/** Commit subjects since last git tag, or last N commits if no tag. */
+function gitLogSubjectsSinceLastTag(cwd, fallbackCount = 30) {
+  const opt = { cwd, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] };
+  let range;
+  try {
+    const tag = execSync("git describe --tags --abbrev=0", opt).trim();
+    range = `${tag}..HEAD`;
+  } catch {
+    range = `-${fallbackCount}`;
+  }
+  try {
+    const out = execSync(`git log ${range} --pretty=%s`, opt).trim();
+    return out ? out.split("\n") : [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Conventional-commit style guess: feat → minor, BREAKING / type! → major, else patch.
+ */
+function inferSemverBump(cwd) {
+  const subjects = gitLogSubjectsSinceLastTag(cwd);
+  if (!subjects.length) return "patch";
+  for (const s of subjects) {
+    if (/BREAKING CHANGE/i.test(s)) return "major";
+  }
+  for (const s of subjects) {
+    if (/^(\w[\w-]*)(?:\([^)]*\))?!:/i.test(s)) return "major";
+  }
+  for (const s of subjects) {
+    if (/^feat(?:\([^)]*\))?:/i.test(s)) return "minor";
+  }
+  return "patch";
+}
+
 function githubRepoToHttps(nameWithOwner) {
   return `https://github.com/${nameWithOwner.trim()}.git`;
 }
@@ -262,7 +308,11 @@ switch (command) {
 
     try {
       console.log("Node:", execSync("node -v").toString().trim());
+      const nodePath = getCmdPath("node");
+      if (nodePath) console.log("  Path:", nodePath);
       console.log("NPM:", execSync("npm -v").toString().trim());
+      const npmPath = getCmdPath("npm");
+      if (npmPath) console.log("  Path:", npmPath);
       console.log("Git:", execSync("git --version").toString().trim());
     } catch {
       console.log("❌ Some tools are missing");
@@ -517,6 +567,41 @@ switch (command) {
     console.log("✅ Release completed!");
     break;
 
+  // 🔹 VERSION (npm version — semver bump; auto = match commits → patch|minor|major)
+  case "version": {
+    const pkgPath = path.join(process.cwd(), "package.json");
+    if (!fs.existsSync(pkgPath)) {
+      console.log("❌ No package.json in this directory");
+      process.exit(1);
+    }
+    ensureInGitRepo();
+    const raw = (arg1 || "patch").toLowerCase();
+    const noGitTag = process.argv.includes("--no-git-tag-version");
+    const level = raw === "--no-git-tag-version" ? "patch" : raw;
+    const valid = new Set(["patch", "minor", "major", "auto"]);
+    if (!valid.has(level)) {
+      console.log(`Usage: mhdd24 version [patch|minor|major|auto]
+
+  patch (default)  — npm version patch
+  minor / major    — npm version minor | major
+  auto             — infer bump from conventional commits since last tag
+                     (feat → minor, type! / BREAKING CHANGE → major, else patch)
+
+  Append --no-git-tag-version to only edit package.json (no git commit/tag).`);
+      process.exit(1);
+    }
+    let bump = level;
+    if (level === "auto") {
+      bump = inferSemverBump(process.cwd());
+      console.log(`📌 Auto-matched semver bump: ${bump} (from git history)\n`);
+    }
+    const flags = noGitTag ? " --no-git-tag-version" : "";
+    run(`npm version ${bump}${flags}`);
+    console.log("\n✅ package.json version updated.");
+    if (!noGitTag) console.log("   (npm also created a version commit + tag unless configured otherwise)");
+    break;
+  }
+
   // 🔹 HELP
   default:
     console.log(`
@@ -526,6 +611,7 @@ Core:
   mhdd24 push "msg"
   mhdd24 deploy "msg"
   mhdd24 release
+  mhdd24 version [patch|minor|major|auto] [--no-git-tag-version]
 
 Vercel:
   mhdd24 vercel-setup   (pick GitHub repo, link, git connect — auto deploy on push)
