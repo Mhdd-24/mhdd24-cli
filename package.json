@@ -9,5 +9,8 @@
     "cli"
   ],
   "author": "Mohammed Rafi",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "readline-sync": "^1.4.10"
+  }
 }

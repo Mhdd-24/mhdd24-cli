@@ -3,6 +3,7 @@
 const { execSync } = require("child_process");
 const path = require("path");
 const fs = require("fs");
+const readline = require("readline-sync");
 
 const command = process.argv[2];
 const arg1 = process.argv[3];
@@ -35,7 +36,6 @@ switch (command) {
       console.log("❌ Provide commit message");
       process.exit(1);
     }
-
     run("git add .");
     run(`git commit -m "${arg1}"`);
     run(`git push origin ${getBranch()}`);
@@ -47,13 +47,11 @@ switch (command) {
       console.log("❌ Provide commit message");
       process.exit(1);
     }
-
     run("git add .");
     run(`git commit -m "${arg1}"`);
     run(`git push origin ${getBranch()}`);
     run("npm run build");
     run("npm run deploy");
-
     console.log("✅ Deployed!");
     break;
 
@@ -127,9 +125,42 @@ switch (command) {
     run("npm run deploy");
     break;
 
-  // 🔹 OPEN IN VS CODE
+  // 🔹 OPEN PROJECT
   case "open":
     run("code .");
+    break;
+
+  // 🔹 RELEASE (🔥 PRO FEATURE)
+  case "release":
+    const versionType = arg1 || "patch";
+    const message = arg2 || "release";
+
+    console.log("🚀 Starting release...");
+
+    // Check git clean
+    const status = execSync("git status --porcelain").toString();
+    if (status) {
+      console.log("❌ Git working directory not clean. Commit changes first.");
+      process.exit(1);
+    }
+
+    // Step 1: Version bump
+    console.log("📦 Bumping version...");
+    run(`npm version ${versionType} -m "🔖 v%s - ${message}"`);
+
+    // Step 2: Push code
+    const branch = getBranch();
+    run(`git push origin ${branch}`);
+
+    // Step 3: Push tags
+    run("git push origin --tags");
+
+    // Step 4: Publish
+    console.log("📤 Publishing to npm...");
+    const otp = readline.question("Enter OTP: ");
+    run(`npm publish --otp=${otp}`);
+
+    console.log("✅ Release completed!");
     break;
 
   // 🔹 HELP
@@ -149,5 +180,6 @@ Commands:
   mhdd24 build
   mhdd24 deploy-only
   mhdd24 open
+  mhdd24 release [patch|minor|major] "msg"
 `);
 }
