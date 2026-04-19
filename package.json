@@ -1,0 +1,13 @@
+{
+  "name": "mhdd24-cli",
+  "version": "1.0.0",
+  "description": "Custom developer CLI",
+  "bin": {
+    "mhdd24": "index.js"
+  },
+  "keywords": [
+    "cli"
+  ],
+  "author": "Mohammed Rafi",
+  "license": "MIT"
+}
