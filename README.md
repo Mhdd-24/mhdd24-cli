@@ -82,6 +82,7 @@ MHDD_DASH_PORT=9000 mhdd24 dashboard
 - **Cards**: detected framework, git branch / origin / short dirty preview, full `.mhdd24rc` JSON, Vercel link status (reads `.vercel/project.json` if present), tool versions.
 - Live refresh about every **8 seconds**.
 - On macOS, tries to `open` the URL in your browser.
+- The page includes a **CLI reference** (every command, short description, and copy-paste examples).
 
 JSON API: `GET http://127.0.0.1:3847/api/status`
 
@@ -92,7 +93,7 @@ The same UI can be deployed as a **static site** plus a **serverless** `GET /api
 1. Connect this repo to Vercel (import Git project).
 2. **Build command:** `npm run build` (runs [`build.js`](build.js), which copies [`lib/dashboard-ui.html`](lib/dashboard-ui.html) → `public/index.html`).
 3. **Output directory:** `public` (already set in [`vercel.json`](vercel.json)).
-4. Deploy. Open your deployment URL: `/` is the dashboard, `/api/status` is JSON for **this** deployment’s filesystem (framework + tooling for the checked-out `mhdd24-cli` tree). A banner explains the difference from **`mhdd24 dashboard`** on your laptop.
+4. Deploy. Open your deployment URL: `/` is the dashboard (including the **CLI commands & examples** block), `/api/status` is JSON for **this** deployment’s filesystem (framework + tooling for the checked-out `mhdd24-cli` tree). A banner explains the difference from **`mhdd24 dashboard`** on your laptop.
 
 The `public/` folder is **gitignored**; Vercel generates it on each build. [`api/status.js`](api/status.js) reuses [`collectStatus`](lib/dashboard.js) from the package.
 

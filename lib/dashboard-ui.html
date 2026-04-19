@@ -339,6 +339,83 @@
       line-height: 1.45;
     }
     .deploy-banner strong { color: #fff; }
+    main.main-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+    .cli-reference {
+      margin-bottom: 0;
+    }
+    .cli-intro {
+      margin: 0 0 1rem;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+    .cli-intro a {
+      color: #7ec8ff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .cli-intro a:hover { text-decoration: underline; }
+    .cli-install {
+      margin: 0 0 1.25rem;
+    }
+    .cli-install pre {
+      margin: 0.4rem 0 0;
+      max-height: none;
+    }
+    .feat-cat {
+      margin: 1.35rem 0 0.65rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+    }
+    .feat-cat:first-of-type { margin-top: 0; }
+    .feat-row {
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(120, 140, 180, 0.1);
+    }
+    .feat-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+    .feat-name {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 0.25rem;
+    }
+    .feat-name code {
+      font-family: inherit;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 0.1rem 0.4rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    .feat-desc {
+      margin: 0 0 0.45rem;
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+    .feat-cmd {
+      margin: 0;
+      padding: 0.55rem 0.75rem;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      line-height: 1.45;
+      background: rgba(0, 0, 0, 0.45);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      color: #b8c9e0;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .load-state.compact { padding: 2rem 1rem 3rem; }
   </style>
 </head>
 <body>
@@ -366,8 +443,166 @@
         <a class="btn btn-primary" href="https://vercel.com/docs" target="_blank" rel="noreferrer">Vercel docs</a>
       </div>
     </header>
-    <main>
-      <div id="load" class="load-state">
+    <main class="main-stack">
+      <section class="card cli-reference" aria-labelledby="cli-ref-h">
+        <div class="card-head">
+          <h2 id="cli-ref-h">CLI commands &amp; examples</h2>
+          <span class="card-icon" aria-hidden="true">⌘</span>
+        </div>
+        <p class="cli-intro">
+          Global npm package <a href="https://www.npmjs.com/package/mhdd24-cli" target="_blank" rel="noreferrer">mhdd24-cli</a>.
+          Run these from your project root (where <code>package.json</code> or git lives). Command name: <strong>mhdd24</strong>.
+        </p>
+        <div class="cli-install">
+          <div class="feat-name">Install</div>
+          <pre class="feat-cmd">npm install -g mhdd24-cli</pre>
+        </div>
+
+        <h3 class="feat-cat">Core</h3>
+        <div class="feat-row">
+          <div class="feat-name"><code>push</code></div>
+          <p class="feat-desc">Git add · commit · push current branch. Runs optional Vercel prod deploy if <code>.mhdd24rc</code> sets <code>vercel.cliDeployAfterPush</code>.</p>
+          <pre class="feat-cmd">mhdd24 push "fix: handle edge case"</pre>
+        </div>
+        <div class="feat-row">
+          <div class="feat-name"><code>deploy</code></div>
+          <p class="feat-desc">Same as push, then runs <code>build</code> and <code>deploy</code> scripts from <code>.mhdd24rc</code> (defaults <code>npm run build</code> / <code>npm run deploy</code>).</p>
+          <pre class="feat-cmd">mhdd24 deploy "chore: release candidate"</pre>
+        </div>
+        <div class="feat-row">
+          <div class="feat-name"><code>release</code></div>
+          <p class="feat-desc">Requires clean git tree. Runs <code>standard-version</code>, pushes branch and tags, then <code>npm publish</code> (asks for OTP).</p>
+          <pre class="feat-cmd">mhdd24 release</pre>
+        </div>
+        <div class="feat-row">
+          <div class="feat-name"><code>version</code></div>
+          <p class="feat-desc">Bumps <code>package.json</code> via <code>npm version</code>. Use <code>auto</code> to infer patch/minor/major from conventional commits since last tag. Add <code>--no-git-tag-version</code> to skip git tag.</p>
+          <pre class="feat-cmd">mhdd24 version patch
+mhdd24 version auto
+mhdd24 version minor --no-git-tag-version</pre>
+        </div>
+
+        <h3 class="feat-cat">Vercel</h3>
+        <div class="feat-row">
+          <div class="feat-name"><code>vercel-setup</code></div>
+          <p class="feat-desc">Pick GitHub repo (<code>gh</code> or manual <code>owner/repo</code>), optional <code>origin</code>, <code>vercel link</code>, <code>vercel git connect</code>, updates <code>.mhdd24rc</code>.</p>
+          <pre class="feat-cmd">mhdd24 vercel-setup</pre>
+        </div>
+        <div class="feat-row">
+          <div class="feat-name"><code>vercel</code></div>
+          <p class="feat-desc">Production deploy now (<code>vercel deploy --prod --yes</code>). Needs Vercel CLI logged in.</p>
+          <pre class="feat-cmd">mhdd24 vercel</pre>
+        </div>
+        <div class="feat-row">
+          <div class="feat-name"><code>domain-add</code></div>
+          <p class="feat-desc">Adds a domain to the linked Vercel project; appends to <code>vercel.domains</code> in <code>.mhdd24rc</code>.</p>
+          <pre class="feat-cmd">mhdd24 domain-add app.example.com</pre>
+        </div>
+
+        <h3 class="feat-cat">Project insight</h3>
+        <div class="feat-row">
+          <div class="feat-name"><code>detect</code></div>
+          <p class="feat-desc">Detects framework / package manager, writes <code>framework</code> block to <code>.mhdd24rc</code>; optional prompt to sync <code>build</code>.</p>
+          <pre class="feat-cmd">mhdd24 detect</pre>
+        </div>
+        <div class="feat-row">
+          <div class="feat-name"><code>dashboard</code></div>
+          <p class="feat-desc">Local web UI on <code>127.0.0.1</code> (default port <code>3847</code>). Env <code>MHDD_DASH_PORT</code> or pass port as argument.</p>
+          <pre class="feat-cmd">mhdd24 dashboard
+mhdd24 dashboard 9000</pre>
+        </div>
+
+        <h3 class="feat-cat">Dev</h3>
+        <div class="feat-row">
+          <div class="feat-name"><code>doctor</code></div>
+          <p class="feat-desc">Node, npm, git versions and binary paths; <code>MONGO_URI</code>; detected framework when <code>package.json</code> exists.</p>
+          <pre class="feat-cmd">mhdd24 doctor</pre>
+        </div>
+        <div class="feat-row">
+          <div class="feat-name"><code>logs</code></div>
+          <p class="feat-desc">Tails <code>logs/app.log</code> (Ctrl+C to exit).</p>
+          <pre class="feat-cmd">mhdd24 logs</pre>
+        </div>
+        <div class="feat-row">
+          <div class="feat-name"><code>analyze</code></div>
+          <p class="feat-desc">Bundle size via <code>npx source-map-explorer build/static/js/*.js</code> (CRA-style paths).</p>
+          <pre class="feat-cmd">mhdd24 analyze</pre>
+        </div>
+        <div class="feat-row">
+          <div class="feat-name"><code>rollback</code></div>
+          <p class="feat-desc">Soft reset last commit (<code>git reset --soft HEAD~1</code>).</p>
+          <pre class="feat-cmd">mhdd24 rollback</pre>
+        </div>
+        <div class="feat-row">
+          <div class="feat-name"><code>smart-commit</code></div>
+          <p class="feat-desc">Infers message from staged paths, commit, push; optional Vercel like <code>push</code>.</p>
+          <pre class="feat-cmd">mhdd24 smart-commit</pre>
+        </div>
+
+        <h3 class="feat-cat">Environment</h3>
+        <div class="feat-row">
+          <div class="feat-name"><code>env</code></div>
+          <p class="feat-desc">Appends <code>KEY=value</code> to <code>.env</code> in the current directory.</p>
+          <pre class="feat-cmd">mhdd24 env API_URL https://api.example.com</pre>
+        </div>
+
+        <h3 class="feat-cat">Git</h3>
+        <div class="feat-row">
+          <div class="feat-name"><code>branch</code> · <code>switch</code> · <code>pull</code> · <code>status</code> · <code>clean-git</code></div>
+          <p class="feat-desc">Create branch, checkout, pull current branch, short status, hard reset + clean untracked.</p>
+          <pre class="feat-cmd">mhdd24 branch feature/oauth
+mhdd24 switch main
+mhdd24 pull
+mhdd24 status
+mhdd24 clean-git</pre>
+        </div>
+
+        <h3 class="feat-cat">Project</h3>
+        <div class="feat-row">
+          <div class="feat-name"><code>init</code></div>
+          <p class="feat-desc">Writes <code>.mhdd24rc</code> (with framework detection if <code>package.json</code> exists) and creates <code>.env</code> if missing.</p>
+          <pre class="feat-cmd">mhdd24 init</pre>
+        </div>
+        <div class="feat-row">
+          <div class="feat-name"><code>open</code></div>
+          <p class="feat-desc">Opens current folder in VS Code (<code>code .</code>).</p>
+          <pre class="feat-cmd">mhdd24 open</pre>
+        </div>
+        <div class="feat-row">
+          <div class="feat-name"><code>open-url</code></div>
+          <p class="feat-desc">Opens a URL with the system default handler (macOS <code>open</code>).</p>
+          <pre class="feat-cmd">mhdd24 open-url https://github.com/you/repo</pre>
+        </div>
+
+        <h3 class="feat-cat">Build &amp; deploy scripts</h3>
+        <div class="feat-row">
+          <div class="feat-name"><code>build</code> · <code>deploy-only</code></div>
+          <p class="feat-desc">Runs <code>build</code> / <code>deploy</code> from <code>.mhdd24rc</code> or falls back to <code>npm run build</code> / <code>npm run deploy</code>.</p>
+          <pre class="feat-cmd">mhdd24 build
+mhdd24 deploy-only</pre>
+        </div>
+        <div class="feat-row">
+          <div class="feat-name"><code>clean</code></div>
+          <p class="feat-desc">Removes <code>node_modules</code> and lockfile, then <code>npm install</code>.</p>
+          <pre class="feat-cmd">mhdd24 clean</pre>
+        </div>
+
+        <h3 class="feat-cat">Other</h3>
+        <div class="feat-row">
+          <div class="feat-name"><code>seed</code></div>
+          <p class="feat-desc">MongoDB seed helper for a specific <code>api/…/SeedData</code> layout; requires <code>MONGO_URI</code>. Locales optional, default <code>en,de,ta,ml</code>.</p>
+          <pre class="feat-cmd">mhdd24 seed
+mhdd24 seed en,de</pre>
+        </div>
+        <div class="feat-row">
+          <div class="feat-name">Help</div>
+          <p class="feat-desc">Prints all commands when the first argument is missing or unknown.</p>
+          <pre class="feat-cmd">mhdd24
+mhdd24 help</pre>
+        </div>
+      </section>
+
+      <div id="load" class="load-state compact">
         <p>Loading project status…</p>
         <div class="skeleton-grid" aria-hidden="true">
           <div class="sk"></div><div class="sk"></div><div class="sk"></div>
