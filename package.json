@@ -1,6 +1,6 @@
 {
   "name": "mhdd24-cli",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Custom developer CLI",
   "scripts": {
     "build": "node build.js"
