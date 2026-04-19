@@ -1,6 +1,6 @@
 {
   "name": "mhdd24-cli",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Custom developer CLI",
   "bin": {
     "mhdd24": "index.js"
