@@ -10,7 +10,13 @@
   ],
   "author": "Mohammed Rafi",
   "license": "MIT",
+  "files": [
+    "index.js",
+    "lib",
+    "README.md"
+  ],
   "dependencies": {
+    "inquirer": "^13.4.1",
     "readline-sync": "^1.4.10"
   }
 }
