@@ -70,7 +70,7 @@ mhdd24 domain-add app.example.com
 
 ## Dashboard (web panel)
 
-Read-only local UI for the **current working directory** (run it inside a project repo).
+Read-only local UI for the **current working directory** (run it inside a project repo). The panel uses a **dark theme** (gradient mesh, glass-style cards, **DM Sans** + **JetBrains Mono** via Google Fonts when online).
 
 ```bash
 mhdd24 dashboard         # default port 3847
