@@ -2,6 +2,9 @@
   "name": "mhdd24-cli",
   "version": "1.0.4",
   "description": "Custom developer CLI",
+  "scripts": {
+    "build": "node build.js"
+  },
   "bin": {
     "mhdd24": "index.js"
   },
@@ -13,6 +16,9 @@
   "files": [
     "index.js",
     "lib",
+    "api",
+    "build.js",
+    "vercel.json",
     "README.md"
   ],
   "dependencies": {
